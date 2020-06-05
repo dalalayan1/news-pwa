@@ -1,6 +1,16 @@
 window.addEventListener('load', init);
 const API_KEY = "6321f37f7ee44de58d16f3c18a7ff614";
 function init() {
+
+    if ('serviceWorker' in navigator) {
+        try {
+            navigator.serviceWorker.register('serviceworker.js');
+            console.log('SW registered');
+        } catch (error) {
+            console.log('Error in registering SW => ', error);
+        }
+    }
+
     updateNews();
 }
 
