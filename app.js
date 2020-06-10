@@ -16,25 +16,10 @@ function init() {
     searchCta.addEventListener('click', fetchSearch);
 
     const savedSearchesList = document.getElementById('savedSearchesList');
+    loadMarkup(savedSearches, savedSearchesList, addSavedSearch);
     savedSearchesList.addEventListener('click', fetchSavedSearch);
 
-    loadSavedSearches();
 
-}
-
-function loadSavedSearches(addItem) {
-    if (!savedSearches.length && !addItem) {
-        return;
-    }
-    const savedSearchesList = document.getElementById('savedSearchesList');
-    if (addItem) {
-        savedSearchesList.innerHTML += `<li data-item='${addItem}'>${addItem}<li>`;
-        return;
-    }
-    savedSearchesList.innerHTML = "";
-    savedSearches.forEach(item => {
-        savedSearchesList.innerHTML += `<li data-item='${item}'>${item}<li>`;
-    })
 }
 
 function fetchSavedSearch(e) {
@@ -59,11 +44,12 @@ async function fetchSearch() {
         const newsWrapper = document.getElementById('newsWrapper');
 
         try {
-            loadNews(newsList, newsWrapper);
+            loadMarkup(newsList.articles, newsWrapper, addArticle);
             if (!savedSearches.includes(searchVal)) {
                 savedSearches.push(searchVal);
                 sessionStorage.setItem(SAVED_SEARCHES, JSON.stringify(savedSearches));
-                loadSavedSearches(searchVal);
+                const savedSearchesList = document.getElementById('savedSearchesList');
+                loadMarkup(savedSearches, savedSearchesList, addSavedSearch);
             }
         } catch (error) {
             newsWrapper.innerHTML = `<h1>Something went wrong!</h1>`;
@@ -74,18 +60,54 @@ async function fetchSearch() {
     }
 }
 
-function loadNews(data, selector) {
-    selector.innerHTML = data.articles.map(addArticle).join('\n');
+function loadMarkup(data, selector, handler) {
+
+    if (!data.length) return;
+
+    selector.innerHTML = data.map(handler).join('\n');
 }
 
 function addArticle(datum) {
+
+
     return `
-        <div class='news-item col-md-3'>
+        <div class='news-item col-md-4'>
             <a href='${datum.url}'>
-            <h2>${datum.title}</h2>
-            <img src="${datum.urlToImage}" alt="">
+            <h2 title='${datum.title}'>${datum.title}</h2>
+            <img src='${datum.urlToImage}' alt="">
             <p>${datum.description}</p>
             </a>
         </div>
     `;
+
+    // const image = new Image();
+    // image.src = datum.urlToImage;
+
+    // image.addEventListener('load', function (e) {
+    //     return `
+    //     <div class='news-item col-md-4'>
+    //         <a href='${datum.url}'>
+    //         <h2 title='${datum.title}'>${datum.title}</h2>
+    //         <img src='${datum.urlToImage}' alt="">
+    //         <p>${datum.description}</p>
+    //         </a>
+    //     </div>
+    // `;
+    // });
+
+    // image.addEventListener('error', function (e) {
+    //     return `
+    //     <div class='news-item col-md-4'>
+    //         <a href='${datum.url}'>
+    //         <h2 title='${datum.title}'>${datum.title}</h2>
+    //         <img src="./images/loader.png" alt="">
+    //         <p>${datum.description}</p>
+    //         </a>
+    //     </div>
+    // `;
+    // });
+}
+
+function addSavedSearch(datum) {
+    return `<li data-item='${datum}'>${datum}<li>`;
 }
