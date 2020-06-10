@@ -80,7 +80,7 @@ function loadNews(data, selector) {
 
 function addArticle(datum) {
     return `
-        <div class='news-item'>
+        <div class='news-item col-md-3'>
             <a href='${datum.url}'>
             <h2>${datum.title}</h2>
             <img src="${datum.urlToImage}" alt="">
